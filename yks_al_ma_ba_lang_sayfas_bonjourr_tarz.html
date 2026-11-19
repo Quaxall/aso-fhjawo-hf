@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YKS Ders &amp; Hoca Rehberi</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==========================================================================
+       BONJOURR ESTETİĞİ & TEMA DEĞİŞKENLERİ
+       ========================================================================== */
+    :root {
+      --bg-gradient: linear-gradient(145deg, #185a63 0%, #113b47 48%, #0b1926 100%);
+      --card-radius: 1.6rem;
+      --glass-bg: rgba(255, 255, 255, 0.11);
+      --glass-bg-hover: rgba(255, 255, 255, 0.19);
+      --glass-border: rgba(255, 255, 255, 0.18);
+      --glass-shadow: 0 10px 30px -6px rgba(0, 0, 0, 0.35);
+      --text-shadow: 0 1px 4px rgba(0, 0, 0, 0.55);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #ffffff;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      overflow-x: hidden;
+      transition: background 0.5s ease;
+    }
+
+    /* Arka Plan Temaları */
+    body[data-theme="petrol"] {
+      --bg-gradient: linear-gradient(145deg, #185a63 0%, #113b47 48%, #0b1926 100%);
+    }
+    body[data-theme="ocean"] {
+      --bg-gradient: linear-gradient(145deg, #0f3460 0%, #16213e 52%, #0a0f1d 100%);
+    }
+    body[data-theme="forest"] {
+      --bg-gradient: linear-gradient(145deg, #1b4332 0%, #132a24 52%, #0b1412 100%);
+    }
+    body[data-theme="anthracite"] {
+      --bg-gradient: linear-gradient(145deg, #27272a 0%, #18181b 52%, #09090b 100%);
+    }
+
+    /* Arka Plan Yumuşak Ambiyans Işıkları */
+    .ambient-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 18% 15%, rgba(255, 255, 255, 0.07) 0%, transparent 42%),
+        radial-gradient(circle at 82% 80%, rgba(56, 189, 248, 0.06) 0%, transparent 45%);
+    }
+
+    /* Bonjourr Tipografi Gölgesi */
+    .bonjourr-text {
+      font-weight: 600;
+      text-shadow: var(--text-shadow);
+    }
+
+    /* Buzlu Cam (Glassmorphism) Paneller */
+    .glass-panel {
+      background: rgba(15, 23, 34, 0.52);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    .glass-bar {
+      background: rgba(255, 255, 255, 0.09);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    /* Bonjourr Büyük Simge Kartı (Squircle - border-radius: 1.6rem) */
+    .bonjourr-tile {
+      border-radius: var(--card-radius);
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+                  background-color 0.22s ease,
+                  border-color 0.22s ease,
+                  box-shadow 0.22s ease;
+    }
+
+    .bonjourr-card-group:hover .bonjourr-tile,
+    .bonjourr-card-group:focus-visible .bonjourr-tile {
+      transform: translateY(-4px) scale(1.02);
+      background: var(--glass-bg-hover);
+      border-color: rgba(255, 255, 255, 0.32);
+      box-shadow: 0 16px 34px -6px rgba(0, 0, 0, 0.45);
+    }
+
+    .bonjourr-card-group:active .bonjourr-tile {
+      transform: scale(0.97);
+    }
+
+    /* Düzenleme Modu Titreşim / Çerçeve Vurgusu */
+    .edit-mode-active .bonjourr-tile {
+      border-style: dashed;
+      border-color: rgba(250, 204, 21, 0.55);
+    }
+
+    /* Modal Animasyonları */
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.94) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .animate-modal {
+      animation: modalFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Özel Kaydırma Çubuğu */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.22);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.38);
+    }
+  </style>
+</head>
+<body data-theme="petrol" class="selection:bg-teal-400/30 selection:text-white">
+  <!-- Ambiyans Işık Katmanı -->
+  <div class="ambient-glow"></div>
+
+  <!-- Ana Kapsayıcı -->
+  <div id="app" class="relative z-10 min-h-screen flex flex-col justify-between max-w-[1440px] mx-auto px-4 sm:px-8 py-5 sm:py-7">
+    
+    <!-- ÜST KONTROL ÇUBUĞU -->
+    <header class="w-full flex flex-col gap-4">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <!-- Sol: Marka / Başlık & Bulut Senkronizasyon Durumu -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl glass-bar flex items-center justify-center shadow-md">
+            <svg class="w-5 h-5 text-teal-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-base sm:text-lg font-semibold tracking-tight bonjourr-text">YKS Çalışma Merkezi</h1>
+              <span id="sync-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/10 text-white/85 border border-white/15">
+                <span id="sync-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span id="sync-text">Bağlanıyor...</span>
+              </span>
+            </div>
+            <p id="user-subtitle" class="text-xs text-white/65 hidden sm:block">TYT &amp; AYT Ders ve Hoca Oynatma Listeleri</p>
+          </div>
+        </div>
+
+        <!-- Sağ: Görünüm, Düzenleme, Hesap ve Ayar Butonları -->
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Tümünü Açık Listele / Klasör Görünümü Geçişi -->
+          <button id="btn-toggle-view" type="button" title="Klasör veya Açık Liste Görünümü"
+            class="glass-bar hover:bg-white/15 active:scale-95 transition px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-medium flex items-center gap-2 cursor-pointer">
+            <svg id="icon-view-mode" class="w-4 h-4 text-teal-200 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            </svg>
+            <span id="label-view-mode">Tümünü Açık Listele</span>
+          </button>
+
+          <!-- Düzenleme Modu Butonu -->
+          <button id="btn-toggle-edit" type="button" title="Klasör ve Hoca Ekle/Düzenle"
+            class="glass-bar hover:bg-white/15 active:scale-95 transition px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-medium flex items-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-amber-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span id="label-edit-mode">Düzenle</span>
+          </button>
+
+          <!-- Google ile Giriş / Hesap Butonu -->
+          <button id="btn-auth" type="button" title="Cihazlar Arası Senkronizasyon için Google Hesabı"
+            class="glass-bar hover:bg-white/15 active:scale-95 transition px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-medium flex items-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+              <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.4 1 3.5 3.6 1.6 7.4l3.7 2.8C6.2 7.2 8.9 5 12 5z"/>
+              <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6l3.7 2.9c2.2-2 3.7-5 3.7-8.7z"/>
+              <path fill="#FBBC05" d="M5.3 14.8c-.2-.8-.4-1.6-.4-2.5s.2-1.7.4-2.5L1.6 7C.6 8.9 0 10.9 0 13s.6 4.1 1.6 6l3.7-2.8z"/>
+              <path fill="#34A853" d="M12 24c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3.1 0-5.8-2.1-6.7-5l-3.7 2.8C3.5 21.4 7.4 24 12 24z"/>
+            </svg>
+            <span id="label-auth">Google ile Giriş</span>
+          </button>
+
+          <!-- Ayarlar & Yedekleme Butonu -->
+          <button id="btn-open-settings" type="button" title="Tema, JSON Dışa/İçe Aktar ve Sıfırlama"
+            class="glass-bar hover:bg-white/15 active:scale-95 transition p-2.5 rounded-2xl flex items-center justify-center cursor-pointer" aria-label="Ayarlar">
+            <svg class="w-5 h-5 text-white/90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- HIZLI ARAMA ÇUBUĞU & TYT / AYT SEKMELERİ -->
+      <div class="w-full max-w-2xl mx-auto mt-2 sm:mt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+        <!-- Arama Input -->
+        <div class="relative flex-1">
+          <svg class="w-4 h-4 text-white/60 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input id="search-input" type="text" placeholder="Ders veya hoca ara... (ör. eyüp b, biyoloji, altuğ)"
+            class="w-full glass-bar rounded-2xl pl-11 pr-10 py-3 text-sm text-white placeholder-white/55 focus:outline-none focus:ring-2 focus:ring-white/35 transition" />
+          <button id="btn-clear-search" type="button" class="hidden absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-white/15 text-white/70 hover:text-white cursor-pointer" title="Aramayı Temizle">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Sekme Filtreleri (Tümü / TYT / AYT) -->
+        <div class="glass-bar p-1 rounded-2xl flex items-center justify-center gap-1 shrink-0" role="tablist" aria-label="Sınav Türü Filtresi">
+          <button type="button" data-filter="all" class="filter-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer bg-white/25 text-white shadow-sm">
+            Tümü
+          </button>
+          <button type="button" data-filter="tyt" class="filter-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-white/75 hover:text-white hover:bg-white/10">
+            TYT
+          </button>
+          <button type="button" data-filter="ayt" class="filter-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer text-white/75 hover:text-white hover:bg-white/10">
+            AYT
+          </button>
+        </div>
+      </div>
+
+      <!-- Düzenleme Modu Bilgi Şeridi (Sadece Edit Mode Aktifken Görünür) -->
+      <div id="edit-banner" class="hidden w-full max-w-3xl mx-auto glass-bar border-amber-300/40 bg-amber-500/15 rounded-2xl px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
+        <div class="flex items-center gap-2 text-amber-100">
+          <span class="w-2 h-2 rounded-full bg-amber-300"></span>
+          <span><strong>Düzenleme Modu Açık:</strong> Kartları düzenleyebilir, silebilir veya yeni ders klasörü/hoca ekleyebilirsiniz.</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-add-folder" type="button" class="px-3 py-1.5 rounded-xl bg-white/20 hover:bg-white/30 text-white font-semibold transition cursor-pointer">
+            + Yeni Klasör
+          </button>
+          <button id="btn-add-root-link" type="button" class="px-3 py-1.5 rounded-xl bg-teal-400/30 hover:bg-teal-400/40 text-white font-semibold transition cursor-pointer">
+            + Hoca / Link Ekle
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ORTA ALAN: BONJOURR SIMGE IZGARASI VEYA AÇIK LİSTE GÖRÜNÜMÜ -->
+    <main id="main-content" class="my-auto py-8 sm:py-10 w-full">
+      <!-- Dinamik İçerik Buraya Render Edilir -->
+    </main>
+
+    <!-- ALT BİLGİ -->
+    <footer class="w-full flex flex-wrap items-center justify-between gap-2 text-xs text-white/55 pt-2 border-t border-white/10">
+      <div class="flex items-center gap-2">
+        <span>Bonjourr tarzı YKS çalışma panosu</span>
+        <span class="hidden sm:inline">•</span>
+        <span id="item-counter" class="hidden sm:inline">8 klasör, 22 oynatma listesi</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="storage-hint">Değişiklikler otomatik buluta kaydedilir</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ==========================================================================
+       1. KLASÖR İÇERİĞİ MODAL PENCERESİ (BONJOURR FOLDER POPUP)
+       ========================================================================== -->
+  <div id="folder-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div id="folder-modal-card" class="glass-panel w-full max-w-2xl rounded-[2rem] p-6 sm:p-8 animate-modal relative max-h-[88vh] flex flex-col">
+      <!-- Klasör Üst Başlık -->
+      <div class="flex items-center justify-between gap-3 pb-4 border-b border-white/15">
+        <div class="flex items-center gap-3">
+          <div id="folder-modal-icon" class="w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center text-white"></div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 id="folder-modal-title" class="text-xl sm:text-2xl font-semibold tracking-tight bonjourr-text capitalize">Klasör</h2>
+              <span id="folder-modal-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/15 text-white/90">0 hoca</span>
+            </div>
+            <p class="text-xs text-white/65 mt-0.5">Oynatma listesini yeni sekmede açmak için hocaya tıklayın</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="btn-folder-add-link" type="button" class="px-3.5 py-2 rounded-xl bg-teal-400/25 hover:bg-teal-400/35 border border-teal-300/30 text-xs sm:text-sm font-semibold text-white transition cursor-pointer">
+            + Hoca Ekle
+          </button>
+          <button id="btn-close-folder" type="button" class="p-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white transition cursor-pointer" aria-label="Kapat">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Klasör İçi Hoca Kartları Grid -->
+      <div id="folder-modal-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5 pt-6 overflow-y-auto pr-1">
+        <!-- Hoca kartları dinamik eklenir -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       2. EKLEME / DÜZENLEME MODAL PENCERESİ (KLASÖR VEYA HOCA/LİNK)
+       ========================================================================== -->
+  <div id="editor-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div class="glass-panel w-full max-w-md rounded-[2rem] p-6 sm:p-7 animate-modal">
+      <div class="flex items-center justify-between pb-3 border-b border-white/15">
+        <h3 id="editor-modal-title" class="text-lg font-semibold bonjourr-text">Yeni Öğe Ekle</h3>
+        <button id="btn-close-editor" type="button" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form id="editor-form" class="mt-4 flex flex-col gap-4">
+        <input type="hidden" id="edit-item-id" />
+        <input type="hidden" id="edit-item-kind" /> <!-- 'folder' veya 'link' -->
+
+        <!-- Başlık Alanı -->
+        <div>
+          <label for="edit-title" id="label-edit-title" class="block text-xs font-semibold text-white/80 mb-1.5">Başlık</label>
+          <input id="edit-title" type="text" required placeholder="Örn: eyüp b veya ayt fizik"
+            class="w-full rounded-2xl bg-white/10 border border-white/20 px-4 py-3 text-sm text-white placeholder-white/45 focus:outline-none focus:ring-2 focus:ring-teal-300/50" />
+        </div>
+
+        <!-- Konum / Klasör Seçimi (Sadece linkler için) -->
+        <div id="field-parent-wrapper">
+          <label for="edit-parent" class="block text-xs font-semibold text-white/80 mb-1.5">Bulunduğu Klasör</label>
+          <select id="edit-parent"
+            class="w-full rounded-2xl bg-slate-800/90 border border-white/20 px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-teal-300/50">
+            <option value="default">Ana Ekran (Klasör Dışı)</option>
+          </select>
+        </div>
+
+        <!-- YouTube URL Alanı (Sadece linkler için) -->
+        <div id="field-url-wrapper">
+          <label for="edit-url" class="block text-xs font-semibold text-white/80 mb-1.5">YouTube Oynatma Listesi Bağlantısı</label>
+          <input id="edit-url" type="url" placeholder="https://www.youtube.com/playlist?list=..."
+            class="w-full rounded-2xl bg-white/10 border border-white/20 px-4 py-3 text-sm text-white placeholder-white/45 focus:outline-none focus:ring-2 focus:ring-teal-300/50" />
+          <p id="url-warning-hint" class="hidden text-xs text-amber-300 mt-1.5">
+            ⚠️ Dikkat: Bu bağlantının playlist ID'si standarttan kısa görünüyor, YouTube'da açılmayabilir.
+          </p>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="btn-cancel-editor" class="px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-sm font-medium text-white cursor-pointer">
+            Vazgeç
+          </button>
+          <button type="submit" class="px-5 py-2.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-sm font-semibold shadow-lg transition cursor-pointer">
+            Kaydet
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       3. AYARLAR, TEMA & JSON YEDEKLEME MODAL PENCERESİ
+       ========================================================================== -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div class="glass-panel w-full max-w-lg rounded-[2rem] p-6 sm:p-7 animate-modal max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-white/15">
+        <h3 class="text-lg font-semibold bonjourr-text">Görünüm, Senkronizasyon &amp; Yedek</h3>
+        <button id="btn-close-settings" type="button" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="mt-5 flex flex-col gap-6">
+        <!-- Arka Plan Teması Seçici -->
+        <div>
+          <span class="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-2.5">Arka Plan Teması</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <button type="button" data-theme-choice="petrol" class="theme-btn p-2.5 rounded-2xl border border-white/25 bg-white/10 hover:bg-white/20 flex flex-col items-center gap-1.5 cursor-pointer transition">
+              <span class="w-8 h-8 rounded-full border border-white/40" style="background: linear-gradient(135deg, #185a63, #0b1926);"></span>
+              <span class="text-xs font-medium">Petrol (Bonjourr)</span>
+            </button>
+            <button type="button" data-theme-choice="ocean" class="theme-btn p-2.5 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/15 flex flex-col items-center gap-1.5 cursor-pointer transition">
+              <span class="w-8 h-8 rounded-full border border-white/40" style="background: linear-gradient(135deg, #0f3460, #0a0f1d);"></span>
+              <span class="text-xs font-medium">Derin Gece</span>
+            </button>
+            <button type="button" data-theme-choice="forest" class="theme-btn p-2.5 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/15 flex flex-col items-center gap-1.5 cursor-pointer transition">
+              <span class="w-8 h-8 rounded-full border border-white/40" style="background: linear-gradient(135deg, #1b4332, #0b1412);"></span>
+              <span class="text-xs font-medium">Orman Sisi</span>
+            </button>
+            <button type="button" data-theme-choice="anthracite" class="theme-btn p-2.5 rounded-2xl border border-white/15 bg-white/5 hover:bg-white/15 flex flex-col items-center gap-1.5 cursor-pointer transition">
+              <span class="w-8 h-8 rounded-full border border-white/40" style="background: linear-gradient(135deg, #27272a, #09090b);"></span>
+              <span class="text-xs font-medium">Antrasit</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Hesap & Bulut Kimliği Bilgisi -->
+        <div class="rounded-2xl bg-white/5 border border-white/10 p-4">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="block text-xs font-semibold text-white/85">Bulut Senkronizasyon Kimliği</span>
+              <span id="settings-user-id" class="block text-[11px] text-white/60 font-mono break-all mt-1">Oturum bekleniyor...</span>
+            </div>
+            <button id="btn-settings-signout" type="button" class="hidden px-3 py-1.5 rounded-xl bg-rose-500/25 hover:bg-rose-500/35 border border-rose-400/30 text-xs font-semibold text-rose-100 cursor-pointer">
+              Çıkış Yap
+            </button>
+          </div>
+        </div>
+
+        <!-- JSON Yedekleme & İçe Aktarma -->
+        <div>
+          <span class="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-2.5">Veri Yedekleme &amp; Bonjourr JSON Aktarımı</span>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <button id="btn-export-json" type="button" class="px-4 py-3 rounded-2xl bg-white/12 hover:bg-white/20 border border-white/15 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
+              <svg class="w-4 h-4 text-teal-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>JSON Dışa Aktar</span>
+            </button>
+
+            <label class="px-4 py-3 rounded-2xl bg-white/12 hover:bg-white/20 border border-white/15 text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 cursor-pointer transition">
+              <svg class="w-4 h-4 text-sky-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <span>JSON İçe Aktar</span>
+              <input id="input-import-json" type="file" accept=".json,application/json" class="hidden" />
+            </label>
+          </div>
+          <p class="text-[11px] text-white/55 mt-2">Hem bu uygulamanın yedeğini hem de doğrudan Bonjourr dışa aktarma (.json) dosyalarını yükleyebilirsiniz.</p>
+        </div>
+
+        <!-- Varsayılanlara Sıfırla (Özel Onaylı) -->
+        <div class="pt-3 border-t border-white/15 flex flex-col gap-2">
+          <div id="reset-initial-row" class="flex items-center justify-between">
+            <span class="text-xs text-white/70">İlk paylaşılan Bonjourr listesine geri dön</span>
+            <button id="btn-reset-prompt" type="button" class="px-3.5 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/30 text-xs font-semibold text-rose-100 cursor-pointer transition">
+              Varsayılanlara Sıfırla
+            </button>
+          </div>
+          <div id="reset-confirm-row" class="hidden rounded-2xl bg-rose-500/20 border border-rose-400/40 p-3 flex items-center justify-between gap-2">
+            <span class="text-xs text-rose-100 font-medium">Tüm değişiklikler silinip başlangıç listesi yüklensin mi?</span>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button id="btn-reset-cancel" type="button" class="px-3 py-1.5 rounded-xl bg-white/15 text-xs font-medium cursor-pointer">İptal</button>
+              <button id="btn-reset-confirm" type="button" class="px-3 py-1.5 rounded-xl bg-rose-500 text-white text-xs font-semibold cursor-pointer">Evet, Sıfırla</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       4. SİLME ONAY MODALI (alert/confirm YERİNE ÖZEL ARAYÜZ)
+       ========================================================================== -->
+  <div id="delete-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div class="glass-panel w-full max-w-sm rounded-[2rem] p-6 animate-modal text-center">
+      <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-400/30 text-rose-200 flex items-center justify-center mx-auto mb-3">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        </svg>
+      </div>
+      <h3 class="text-base font-semibold bonjourr-text">Öğeyi Sil</h3>
+      <p id="delete-modal-desc" class="text-xs text-white/75 mt-1.5 leading-relaxed">Bu öğeyi silmek istediğinize emin misiniz?</p>
+      <div class="flex items-center justify-center gap-2.5 mt-5">
+        <button id="btn-cancel-delete" type="button" class="flex-1 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 text-xs sm:text-sm font-medium cursor-pointer">Vazgeç</button>
+        <button id="btn-confirm-delete" type="button" class="flex-1 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white text-xs sm:text-sm font-semibold cursor-pointer">Sil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BİLDİRİM TOAST MESAJI -->
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 translate-y-3">
+    <div class="glass-panel px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-medium text-white shadow-xl flex items-center gap-2 border border-white/25">
+      <span id="toast-icon">✨</span>
+      <span id="toast-message">Bildirim</span>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       UYGULAMA MANTIĞI & FIREBASE BULUT SENKRONİZASYONU
+       ========================================================================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import {
+      getAuth,
+      signInAnonymously,
+      signInWithCustomToken,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      setDoc,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    /* --------------------------------------------------------------------------
+       1. BAŞLANGIÇ VERİLERİ (KULLANICININ BONJOURR JSON DOSYASINDAN BİREBİR)
+       -------------------------------------------------------------------------- */
+    const DEFAULT_ITEMS = [
+      // Klasör 0: ayt biyoloji
+      { id: "linksgqihba", order: 0, parent: "default", title: "ayt biyoloji", folder: true },
+      { id: "linkserpnce", order: 0, parent: "linksgqihba", title: "Dr biyoloji", url: "https://www.youtube.com/playlist?list=PL87vBAl7Szvwq_wAtJgLdw7sVMFo9KIca" },
+      { id: "linksgfogea", order: 1, parent: "linksgqihba", title: "BS biyoloji", url: "https://www.youtube.com/playlist?list=PLnY-dsNFytM334wz1vzEy2smzQNTOZZ8Z" },
+
+      // Klasör 1: ayt mat
+      { id: "linksddeenp", order: 1, parent: "default", title: "ayt mat", folder: true },
+      { id: "linksidgjea", order: 0, parent: "linksddeenp", title: "eyüp b", url: "https://www.youtube.com/playlist?list=PLyiXTl2rW_wrZGIFdO99RnVKVUjhrtPyK" },
+      { id: "linksmjkiaf", order: 1, parent: "linksddeenp", title: "bıyıklu", url: "https://www.youtube.com/playlist?list=PL2wqvRc1FjTlxdFRp27gU3Lt4Hqv7-nRb" },
+      { id: "linksajahhm", order: 2, parent: "linksddeenp", title: "soner akıncı", url: "https://www.youtube.com/playlist?list=PLSKqG1c0berddAhjB_ICrzpZi7uAisE9V" },
+      { id: "linksmppoki", order: 3, parent: "linksddeenp", title: "Mert hoca", url: "https://youtube.com/playlist?list=PLxSXQclq3muCMAuYR8gEvoyhm4IJkZoq9" },
+
+      // Klasör 2: ayt fizik
+      { id: "linksmgkglf", order: 2, parent: "default", title: "ayt fizik", folder: true },
+      { id: "linksjaflhi", order: 0, parent: "linksmgkglf", title: "fizikevim", url: "https://www.youtube.com/playlist?list=PLaV4jAC1XDM8ohbXVu1aHVGSYA7nFiiiy" },
+      { id: "linksringdq", order: 1, parent: "linksmgkglf", title: "altuğ güneş 1", url: "https://www.youtube.com/playlist?list=PLjMK0Mww73CfgK0QbkoraX2iJEMNamOP5" },
+      { id: "linksqnrldp", order: 2, parent: "linksmgkglf", title: "altuğ güneş 2", url: "https://www.youtube.com/playlist?list=PLjMK0Mww73CfxObplCo_1Urjv7ouZV_oq" },
+
+      // Klasör 3: ayt kimya
+      { id: "linksocoqmb", order: 3, parent: "default", title: "ayt kimya", folder: true },
+      { id: "linkskfoqda", order: 0, parent: "linksocoqmb", title: "semih balmuk", url: "https://www.youtube.com/playlist?list=PLbSqnUIy2z42ryHIvzebK1HuudgZ7iStz" },
+      { id: "linksdgllnn", order: 1, parent: "linksocoqmb", title: "görkem şahin", url: "https://www.youtube.com/playlist?list=PL5kIOunpmSBPeeFXlNTSsXgq0euBdC3XJ" },
+
+      // Klasör 4: tyt mat
+      { id: "linksegrhdf", order: 4, parent: "default", title: "tyt mat", folder: true },
+      { id: "linksihpbki", order: 0, parent: "linksegrhdf", title: "barış", url: "https://www.youtube.com/playlist?list=PLHtzdL6xrxIMgjhxScWc2JBOZaBWs9D8L" },
+      { id: "linkseohahj", order: 1, parent: "linksegrhdf", title: "eyüp b", url: "https://www.youtube.com/playlist?list=PLyiXTl2rW_wrvZYVh9-A5pHeVhF4xdeO4" },
+      { id: "linksoprhme", order: 2, parent: "linksegrhdf", title: "Tyt ayt mat tekrar", url: "https://youtube.com/playlist?list=PLHtzdL6xrxIN9dM8_yugidvYu35bRk1n7" },
+
+      // Klasör 5: tyt fizik
+      { id: "linksbkcgob", order: 5, parent: "default", title: "tyt fizik", folder: true },
+      { id: "linkslmhlkm", order: 0, parent: "linksbkcgob", title: "fizikle barış", url: "https://www.youtube.com/playlist?list=PLw6C1pT6u509-Q3ZJSqbomSBtYWeduA93" },
+      { id: "linksfmcfna", order: 1, parent: "linksbkcgob", title: "altuğ güneş", url: "https://www.youtube.com/playlist?list=PLjMK0Mww73Cc4v8HI329cVSd7U4cMAEVZ" },
+
+      // Klasör 6: tyt biyoloji
+      { id: "linksdpmahm", order: 6, parent: "default", title: "tyt biyoloji", folder: true },
+      { id: "linksgfocpb", order: 0, parent: "linksdpmahm", title: "zeliha yücel", url: "https://www.youtube.com/playlist?list=PLM5HJuE7seCc" },
+      { id: "linkshalfrl", order: 1, parent: "linksdpmahm", title: "biosem", url: "https://www.youtube.com/playlist?list=PLqLwBmByktJV_bGw_3YwmJ4YUBoJzG4Yk" },
+      { id: "linksijrrnr", order: 2, parent: "linksdpmahm", title: "BS biyoloji", url: "https://www.youtube.com/playlist?list=PLnY-dsNFytM1OkxLMg47nhM3b0JxTB--y" },
+
+      // Klasör 7: tyt kimya
+      { id: "linksmoplkd", order: 7, parent: "default", title: "tyt kimya", folder: true },
+      { id: "linkshmknlf", order: 0, parent: "linksmoplkd", title: "sinan ihtiyaroğlu", url: "https://www.youtube.com/playlist?list=PLPH7AiUWWnatGgr9TWmqSggSPlZtgoebk" },
+      { id: "linksnirmjl", order: 1, parent: "linksmoplkd", title: "BS kimya", url: "https://www.youtube.com/playlist?list=PLbSqnUIy2z43rnE0Fr_TMu_JE3cpW4MVO" },
+
+      // Ana Ekrandaki Tekil Bağlantılar (8, 9, 10)
+      { id: "linkscbbggc", order: 8, parent: "default", title: "dil bilgisi", url: "https://www.youtube.com/playlist?list=PL5kIOunpmSBO-oTU1ejrYlq4IVTXMA4zc" },
+      { id: "linksnlfaae", order: 9, parent: "default", title: "geometri", url: "https://www.youtube.com/playlist?list=PLto0Y-Oz3y1pJpBrGJ8jmd_2X-W5kirMI" },
+      { id: "linksrprono", order: 10, parent: "default", title: "tyt-ayt mat terkar", url: "https://www.youtube.com/playlist?list=PLHtzdL6xrxIN9dM8_yugidvYu35bRk1n7" }
+    ];
+
+    /* --------------------------------------------------------------------------
+       2. UYGULAMA DURUMU (IN-MEMORY STATE + CLOUD FIRESTORE)
+       -------------------------------------------------------------------------- */
+    const state = {
+      items: structuredClone(DEFAULT_ITEMS),
+      theme: "petrol",
+      filterTab: "all",       // 'all' | 'tyt' | 'ayt'
+      searchQuery: "",
+      expandedView: false,    // false = Bonjourr Klasör Izgarası, true = Tümünü Açık Listele
+      editMode: false,
+      openFolderId: null,
+      pendingDeleteId: null,
+      user: null,
+      cloudReady: false,
+      unsubscribeSnapshot: null
+    };
+
+    /* --------------------------------------------------------------------------
+       3. FIREBASE BAŞLATMA & BULUT SENKRONİZASYONU
+       -------------------------------------------------------------------------- */
+    const appId = typeof __app_id !== "undefined" ? __app_id : "default-app-id";
+    let firebaseConfig = null;
+    try {
+      if (typeof __firebase_config !== "undefined" && __firebase_config) {
+        firebaseConfig = typeof __firebase_config === "string"
+          ? JSON.parse(__firebase_config)
+          : __firebase_config;
+      }
+    } catch (err) {
+      console.warn("Firebase yapılandırması ayrıştırılamadı:", err);
+    }
+
+    let app = null;
+    let auth = null;
+    let db = null;
+
+    function updateSyncBadge(status, text) {
+      const dot = document.getElementById("sync-dot");
+      const label = document.getElementById("sync-text");
+      label.textContent = text;
+      dot.className = "w-2 h-2 rounded-full";
+      if (status === "synced") {
+        dot.classList.add("bg-emerald-400");
+      } else if (status === "syncing") {
+        dot.classList.add("bg-amber-400", "animate-pulse");
+      } else {
+        dot.classList.add("bg-sky-400");
+      }
+    }
+
+    function updateAuthUI(user) {
+      const btnAuth = document.getElementById("btn-auth");
+      const labelAuth = document.getElementById("label-auth");
+      const settingsUserId = document.getElementById("settings-user-id");
+      const btnSignOut = document.getElementById("btn-settings-signout");
+
+      if (user && !user.isAnonymous) {
+        const displayName = user.displayName || user.email || "Google Hesabı";
+        labelAuth.textContent = displayName.split(" ")[0];
+        btnAuth.classList.add("border-emerald-400/40", "bg-emerald-500/15");
+        settingsUserId.textContent = `${displayName} (${user.uid})`;
+        btnSignOut.classList.remove("hidden");
+      } else if (user) {
+        labelAuth.textContent = "Google ile Giriş";
+        btnAuth.classList.remove("border-emerald-400/40", "bg-emerald-500/15");
+        settingsUserId.textContent = `Misafir Bulut Oturumu: ${user.uid}`;
+        btnSignOut.classList.add("hidden");
+      } else {
+        labelAuth.textContent = "Google ile Giriş";
+        settingsUserId.textContent = "Oturum açık değil (Oturum içi mod)";
+        btnSignOut.classList.add("hidden");
+      }
+    }
+
+    // Firestore'a mevcut durumu kaydet
+    async function persistToCloud() {
+      if (!db || !state.user) return;
+      try {
+        updateSyncBadge("syncing", "Kaydediliyor...");
+        const userDocRef = doc(db, "artifacts", appId, "users", state.user.uid, "yks_links", "dashboard");
+        await setDoc(userDocRef, {
+          items: state.items,
+          theme: state.theme,
+          updatedAt: Date.now()
+        }, { merge: true });
+        updateSyncBadge("synced", state.user.isAnonymous ? "Bulut Aktif" : "Google Senkronize");
+      } catch (err) {
+        console.error("Bulut kayıt hatası:", err);
+        updateSyncBadge("offline", "Oturum Modu");
+      }
+    }
+
+    // Kullanıcının Firestore belgesini canlı dinle
+    function subscribeUserDashboard(user) {
+      if (!db || !user) return;
+      if (state.unsubscribeSnapshot) {
+        state.unsubscribeSnapshot();
+        state.unsubscribeSnapshot = null;
+      }
+
+      const userDocRef = doc(db, "artifacts", appId, "users", user.uid, "yks_links", "dashboard");
+      state.unsubscribeSnapshot = onSnapshot(
+        userDocRef,
+        (snapshot) => {
+          state.cloudReady = true;
+          if (snapshot.exists()) {
+            const data = snapshot.data();
+            if (Array.isArray(data.items) && data.items.length > 0) {
+              state.items = data.items;
+            }
+            if (data.theme) {
+              applyTheme(data.theme, false);
+            }
+            renderAll();
+          } else {
+            // İlk kez bağlanan kullanıcı için başlangıç verilerini buluta yaz
+            persistToCloud();
+          }
+          updateSyncBadge("synced", user.isAnonymous ? "Bulut Aktif" : "Google Senkronize");
+        },
+        (error) => {
+          console.error("Firestore dinleme hatası:", error);
+          updateSyncBadge("offline", "Oturum Modu");
+        }
+      );
+    }
+
+    async function initFirebase() {
+      if (!firebaseConfig) {
+        updateSyncBadge("offline", "Oturum Modu");
+        return;
+      }
+
+      try {
+        app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        // KURAL 3: Önce kimlik doğrulama tamamlanır, ardından Firestore dinlenir
+        if (typeof __initial_auth_token !== "undefined" && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else if (!auth.currentUser) {
+          await signInAnonymously(auth);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+          state.user = user;
+          updateAuthUI(user);
+          if (user) {
+            subscribeUserDashboard(user);
+          }
+        });
+      } catch (err) {
+        console.error("Firebase başlatma hatası:", err);
+        updateSyncBadge("offline", "Oturum Modu");
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       4. YARDIMCI FONKSİYONLAR (DERS İKONLARI, PLAYLIST DOĞRULAMA, FİLTRELEME)
+       -------------------------------------------------------------------------- */
+    function showToast(message, icon = "✨") {
+      const toast = document.getElementById("toast");
+      document.getElementById("toast-message").textContent = message;
+      document.getElementById("toast-icon").textContent = icon;
+      toast.classList.remove("opacity-0", "translate-y-3");
+      toast.classList.add("opacity-100", "translate-y-0");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => {
+        toast.classList.add("opacity-0", "translate-y-3");
+        toast.classList.remove("opacity-100", "translate-y-0");
+      }, 2800);
+    }
+
+    // YouTube Playlist ID uzunluk kontrolü (Örn: Zeliha Yücel kısa ID uyarısı için)
+    function checkPlaylistWarning(url) {
+      if (!url) return null;
+      try {
+        const parsed = new URL(url);
+        const listParam = parsed.searchParams.get("list");
+        if (listParam && listParam.length < 18) {
+          return `Playlist ID (${listParam}) eksik veya kısa görünüyor.`;
+        }
+      } catch (_) {
+        return "Geçersiz bağlantı biçimi.";
+      }
+      return null;
+    }
+
+    // Ders / Başlık adına göre Bonjourr uyumlu estetik renk ve SVG ikon belirle
+    function getSubjectVisual(title, parentTitle = "") {
+      const text = `${title} ${parentTitle}`.toLowerCase();
+
+      if (text.includes("biyoloji") || text.includes("biosem")) {
+        return {
+          accent: "from-emerald-400/30 to-teal-500/20 text-emerald-200 border-emerald-300/30",
+          badgeBg: "bg-emerald-400/20 text-emerald-200",
+          svg: `<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 15c6.667-6 13.333 0 20-6"/><path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/><path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/><path d="m17 6-2.5-2.5"/><path d="m14 8-1-1"/><path d="m7 18 2.5 2.5"/><path d="m3.5 14.5.5.5"/><path d="m20 9 .5.5"/><path d="m6.5 12.5 1 1"/><path d="m16.5 10.5 1 1"/><path d="m10 16 1.5 1.5"/></svg>`
+        };
+      }
+      if (text.includes("mat") || text.includes("geometri")) {
+        return {
+          accent: "from-sky-400/30 to-indigo-500/20 text-sky-200 border-sky-300/30",
+          badgeBg: "bg-sky-400/20 text-sky-200",
+          svg: `<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>`
+        };
+      }
+      if (text.includes("fizik")) {
+        return {
+          accent: "from-violet-400/30 to-purple-500/20 text-violet-200 border-violet-300/30",
+          badgeBg: "bg-violet-400/20 text-violet-200",
+          svg: `<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>`
+        };
+      }
+      if (text.includes("kimya")) {
+        return {
+          accent: "from-amber-400/30 to-orange-500/20 text-amber-200 border-amber-300/30",
+          badgeBg: "bg-amber-400/20 text-amber-200",
+          svg: `<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 9h4"/><path d="M10 3v6L4 20h16L14 9V3"/></svg>`
+        };
+      }
+      if (text.includes("dil") || text.includes("türkçe") || text.includes("edebiyat")) {
+        return {
+          accent: "from-rose-400/30 to-pink-500/20 text-rose-200 border-rose-300/30",
+          badgeBg: "bg-rose-400/20 text-rose-200",
+          svg: `<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`
+        };
+      }
+      return {
+        accent: "from-teal-400/30 to-cyan-500/20 text-teal-200 border-teal-300/30",
+        badgeBg: "bg-teal-400/20 text-teal-200",
+        svg: `<svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`
+      };
+    }
+
+    function matchesExamTab(title, parentTitle = "") {
+      if (state.filterTab === "all") return true;
+      const combined = `${title} ${parentTitle}`.toLowerCase();
+      const hasTyt = combined.includes("tyt");
+      const hasAyt = combined.includes("ayt");
+
+      if (state.filterTab === "tyt") {
+        // Ortak dersler (dil bilgisi, geometri, tyt-ayt) veya tyt içerenler
+        return hasTyt || (!hasTyt && !hasAyt);
+      }
+      if (state.filterTab === "ayt") {
+        return hasAyt || (!hasTyt && !hasAyt);
+      }
+      return true;
+    }
+
+    function getSortedRootItems() {
+      return state.items
+        .filter((item) => item.parent === "default")
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    }
+
+    function getFolderChildren(folderId) {
+      return state.items
+        .filter((item) => item.parent === folderId && !item.folder)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    /* --------------------------------------------------------------------------
+       5. ARAYÜZ RENDER FONKSİYONLARI (BONJOURR GRID & AÇIK LİSTE)
+       -------------------------------------------------------------------------- */
+    function renderAll() {
+      const mainEl = document.getElementById("main-content");
+      const query = state.searchQuery.trim().toLowerCase();
+      const rootItems = getSortedRootItems();
+
+      // Alt bilgi sayacını güncelle
+      const totalFolders = state.items.filter((i) => i.folder).length;
+      const totalLinks = state.items.filter((i) => !i.folder).length;
+      document.getElementById("item-counter").textContent = `${totalFolders} ders klasörü, ${totalLinks} oynatma listesi`;
+
+      // Düzenleme modu sınıfı
+      document.body.classList.toggle("edit-mode-active", state.editMode);
+
+      // Eğer arama yapılıyorsa veya "Tümünü Açık Listele" aktifse farklı düzenli görünümler sun
+      if (query.length > 0) {
+        renderSearchResults(mainEl, query);
+      } else if (state.expandedView) {
+        renderExpandedView(mainEl, rootItems);
+      } else {
+        renderBonjourrGridView(mainEl, rootItems);
+      }
+
+      // Eğer bir klasör modalı açıksa içeriğini canlı güncelle
+      if (state.openFolderId) {
+        const stillExists = state.items.find((i) => i.id === state.openFolderId && i.folder);
+        if (stillExists) {
+          renderFolderModalContent(stillExists);
+        } else {
+          closeFolderModal();
+        }
+      }
+    }
+
+    // A) Varsayılan Bonjourr Büyük Simge Izgarası (Klasörler + Tekil Linkler)
+    function renderBonjourrGridView(container, rootItems) {
+      const filteredRoots = rootItems.filter((item) => matchesExamTab(item.title));
+
+      if (filteredRoots.length === 0) {
+        container.innerHTML = renderEmptyState("Bu filtreye uygun ders veya bağlantı bulunamadı.");
+        return;
+      }
+
+      const cardsHtml = filteredRoots.map((item, idx) => {
+        if (item.folder) {
+          return renderFolderTileHtml(item, idx, filteredRoots.length);
+        }
+        return renderLinkTileHtml(item, "", idx, filteredRoots.length);
+      }).join("");
+
+      container.innerHTML = `
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-5 gap-y-7 sm:gap-x-7 sm:gap-y-9 max-w-5xl mx-auto justify-items-center">
+          ${cardsHtml}
+        </div>
+      `;
+    }
+
+    // B) "Tümünü Açık Listele" Görünümü (Her ders klasörü kendi açık bölümü olarak listelenir)
+    function renderExpandedView(container, rootItems) {
+      const filteredRoots = rootItems.filter((item) => matchesExamTab(item.title));
+      const folders = filteredRoots.filter((i) => i.folder);
+      const standaloneLinks = filteredRoots.filter((i) => !i.folder);
+
+      if (filteredRoots.length === 0) {
+        container.innerHTML = renderEmptyState("Bu sekmede gösterilecek ders bulunamadı.");
+        return;
+      }
+
+      const folderSections = folders.map((folder) => {
+        const children = getFolderChildren(folder.id);
+        const visual = getSubjectVisual(folder.title);
+        const childCards = children.length > 0
+          ? children.map((child, idx) => renderLinkTileHtml(child, folder.title, idx, children.length)).join("")
+          : `<p class="text-xs text-white/50 col-span-full py-2">Bu klasörde henüz hoca yok.</p>`;
+
+        return `
+          <section class="glass-bar rounded-[2rem] p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b border-white/12">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br ${visual.accent} border flex items-center justify-center">
+                  ${visual.svg}
+                </div>
+                <h2 class="text-base sm:text-lg font-semibold capitalize bonjourr-text">${escapeHtml(folder.title)}</h2>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white/80">${children.length}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                ${state.editMode ? `
+                  <button type="button" data-action="edit-item" data-id="${folder.id}" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-medium cursor-pointer">Klasörü Düzenle</button>
+                  <button type="button" data-action="delete-item" data-id="${folder.id}" class="px-3 py-1.5 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 text-xs font-medium cursor-pointer">Sil</button>
+                ` : ""}
+                <button type="button" data-action="add-to-folder" data-id="${folder.id}" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs font-semibold text-white/90 cursor-pointer">
+                  + Hoca Ekle
+                </button>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 justify-items-center">
+              ${childCards}
+            </div>
+          </section>
+        `;
+      }).join("");
+
+      const standaloneSection = standaloneLinks.length > 0 ? `
+        <section class="glass-bar rounded-[2rem] p-5 sm:p-6">
+          <div class="flex items-center gap-3 pb-4 mb-5 border-b border-white/12">
+            <div class="w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center text-teal-200">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            </div>
+            <h2 class="text-base sm:text-lg font-semibold bonjourr-text">Genel &amp; Tekrar Listeleri</h2>
+          </div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5 justify-items-center">
+            ${standaloneLinks.map((item, idx) => renderLinkTileHtml(item, "", idx, standaloneLinks.length)).join("")}
+          </div>
+        </section>
+      ` : "";
+
+      container.innerHTML = `
+        <div class="flex flex-col gap-6 max-w-6xl mx-auto">
+          ${folderSections}
+          ${standaloneSection}
+        </div>
+      `;
+    }
+
+    // C) Anlık Arama Sonuçları Görünümü (Hem hocaları hem klasörleri eşleştirir)
+    function renderSearchResults(container, query) {
+      const folderMap = new Map();
+      state.items.filter((i) => i.folder).forEach((f) => folderMap.set(f.id, f.title));
+
+      const matchedLinks = state.items.filter((item) => {
+        if (item.folder) return false;
+        const parentName = folderMap.get(item.parent) || "";
+        if (!matchesExamTab(item.title, parentName)) return false;
+        return item.title.toLowerCase().includes(query) || parentName.toLowerCase().includes(query);
+      });
+
+      const matchedFolders = state.items.filter((item) => {
+        if (!item.folder) return false;
+        if (!matchesExamTab(item.title)) return false;
+        return item.title.toLowerCase().includes(query);
+      });
+
+      if (matchedLinks.length === 0 && matchedFolders.length === 0) {
+        container.innerHTML = renderEmptyState(`"${escapeHtml(state.searchQuery)}" aramasına uygun sonuç bulunamadı.`);
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="max-w-5xl mx-auto flex flex-col gap-8">
+          ${matchedLinks.length > 0 ? `
+            <div>
+              <h2 class="text-xs font-semibold uppercase tracking-wider text-white/70 mb-4 px-1">Eşleşen Hoca &amp; Oynatma Listeleri (${matchedLinks.length})</h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-5 gap-y-7 justify-items-center">
+                ${matchedLinks.map((item, idx) => renderLinkTileHtml(item, folderMap.get(item.parent) || "", idx, matchedLinks.length, true)).join("")}
+              </div>
+            </div>
+          ` : ""}
+          ${matchedFolders.length > 0 ? `
+            <div>
+              <h2 class="text-xs font-semibold uppercase tracking-wider text-white/70 mb-4 px-1">Eşleşen Ders Klasörleri (${matchedFolders.length})</h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-5 gap-y-7 justify-items-center">
+                ${matchedFolders.map((folder, idx) => renderFolderTileHtml(folder, idx, matchedFolders.length)).join("")}
+              </div>
+            </div>
+          ` : ""}
+        </div>
+      `;
+    }
+
+    // Tekil Klasör Kartı HTML Şablonu (Bonjourr 2x2 Mini Önizleme Izgaralı Squircle)
+    function renderFolderTileHtml(folder, index, totalCount) {
+      const children = getFolderChildren(folder.id);
+      const visual = getSubjectVisual(folder.title);
+      const previewItems = children.slice(0, 4);
+
+      const miniCells = Array.from({ length: 4 }).map((_, i) => {
+        const child = previewItems[i];
+        if (!child) {
+          return `<div class="rounded-xl bg-white/5 border border-white/5"></div>`;
+        }
+        const initials = child.title.trim().slice(0, 2).toUpperCase();
+        return `
+          <div class="rounded-xl bg-white/15 border border-white/15 flex items-center justify-center text-[11px] font-bold text-white/95 shadow-inner">
+            ${escapeHtml(initials)}
+          </div>
+        `;
+      }).join("");
+
+      const editControls = state.editMode ? `
+        <div class="absolute -top-2 -right-2 z-20 flex items-center gap-1">
+          ${index > 0 ? `<button type="button" data-action="move-up" data-id="${folder.id}" title="Öne Taşı" class="w-7 h-7 rounded-full bg-slate-900/90 border border-white/25 text-white text-xs flex items-center justify-center hover:bg-slate-800 cursor-pointer">‹</button>` : ""}
+          ${index < totalCount - 1 ? `<button type="button" data-action="move-down" data-id="${folder.id}" title="Sona Taşı" class="w-7 h-7 rounded-full bg-slate-900/90 border border-white/25 text-white text-xs flex items-center justify-center hover:bg-slate-800 cursor-pointer">›</button>` : ""}
+          <button type="button" data-action="edit-item" data-id="${folder.id}" title="Düzenle" class="w-7 h-7 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-md hover:bg-amber-300 cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button type="button" data-action="delete-item" data-id="${folder.id}" title="Sil" class="w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-md hover:bg-rose-400 cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      ` : "";
+
+      return `
+        <div class="bonjourr-card-group relative w-full max-w-[136px] flex flex-col items-center select-none">
+          ${editControls}
+          <button type="button" data-action="open-folder" data-id="${folder.id}"
+            class="bonjourr-tile relative w-28 h-28 sm:w-32 sm:h-32 p-3.5 grid grid-cols-2 grid-rows-2 gap-2 cursor-pointer focus:outline-none">
+            ${miniCells}
+            <!-- Sağ alt köşe ders simgesi rozeti -->
+            <span class="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-slate-950/75 border border-white/20 flex items-center justify-center text-[10px] font-bold text-white/90">
+              ${children.length}
+            </span>
+          </button>
+          <span class="mt-2.5 text-center text-sm sm:text-[15px] leading-snug bonjourr-text capitalize line-clamp-2 px-1">
+            ${escapeHtml(folder.title)}
+          </span>
+        </div>
+      `;
+    }
+
+    // Tekil Hoca / YouTube Oynatma Listesi Kartı HTML Şablonu
+    function renderLinkTileHtml(item, parentTitle = "", index = 0, totalCount = 1, showParentTag = false) {
+      const visual = getSubjectVisual(item.title, parentTitle);
+      const warningText = checkPlaylistWarning(item.url);
+
+      const editControls = state.editMode ? `
+        <div class="absolute -top-2 -right-2 z-20 flex items-center gap-1">
+          ${index > 0 ? `<button type="button" data-action="move-up" data-id="${item.id}" title="Öne Taşı" class="w-7 h-7 rounded-full bg-slate-900/90 border border-white/25 text-white text-xs flex items-center justify-center hover:bg-slate-800 cursor-pointer">‹</button>` : ""}
+          ${index < totalCount - 1 ? `<button type="button" data-action="move-down" data-id="${item.id}" title="Sona Taşı" class="w-7 h-7 rounded-full bg-slate-900/90 border border-white/25 text-white text-xs flex items-center justify-center hover:bg-slate-800 cursor-pointer">›</button>` : ""}
+          <button type="button" data-action="edit-item" data-id="${item.id}" title="Düzenle" class="w-7 h-7 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-md hover:bg-amber-300 cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button type="button" data-action="delete-item" data-id="${item.id}" title="Sil" class="w-7 h-7 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-md hover:bg-rose-400 cursor-pointer">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      ` : "";
+
+      const warningBadge = warningText ? `
+        <span title="${escapeHtml(warningText)}" class="absolute top-2.5 left-2.5 px-1.5 py-0.5 rounded-lg bg-amber-400/90 text-slate-950 text-[10px] font-bold flex items-center gap-0.5 shadow">
+          ⚠️ Kısa ID
+        </span>
+      ` : "";
+
+      return `
+        <div class="bonjourr-card-group relative w-full max-w-[136px] flex flex-col items-center select-none">
+          ${editControls}
+          <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer"
+            title="${escapeHtml(item.title)}${warningText ? " — " + warningText : " (YouTube Oynatma Listesi)"}"
+            class="bonjourr-tile relative w-28 h-28 sm:w-32 sm:h-32 flex flex-col items-center justify-center p-3 cursor-pointer focus:outline-none">
+            ${warningBadge}
+            <!-- Merkez Ders Simgesi -->
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br ${visual.accent} border flex items-center justify-center shadow-inner">
+              ${visual.svg}
+            </div>
+            <!-- Sağ Alt YouTube Rozeti -->
+            <span class="absolute bottom-2.5 right-2.5 px-1.5 py-0.5 rounded-md bg-red-600/90 text-white flex items-center gap-1 shadow-sm">
+              <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"></polygon></svg>
+            </span>
+          </a>
+          <span class="mt-2.5 text-center text-sm sm:text-[15px] leading-snug bonjourr-text capitalize line-clamp-2 px-1">
+            ${escapeHtml(item.title)}
+          </span>
+          ${showParentTag && parentTitle ? `
+            <span class="mt-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${visual.badgeBg} capitalize">
+              ${escapeHtml(parentTitle)}
+            </span>
+          ` : ""}
+        </div>
+      `;
+    }
+
+    function renderEmptyState(msg) {
+      return `
+        <div class="glass-bar max-w-md mx-auto rounded-[2rem] p-8 text-center">
+          <p class="text-sm text-white/80 font-medium">${msg}</p>
+        </div>
+      `;
+    }
+
+    /* --------------------------------------------------------------------------
+       6. KLASÖR AÇILIR PENCERESİ (MODAL) YÖNETİMİ
+       -------------------------------------------------------------------------- */
+    function openFolderModal(folderId) {
+      const folder = state.items.find((i) => i.id === folderId && i.folder);
+      if (!folder) return;
+      state.openFolderId = folderId;
+      renderFolderModalContent(folder);
+      document.getElementById("folder-modal").classList.remove("hidden");
+    }
+
+    function renderFolderModalContent(folder) {
+      const children = getFolderChildren(folder.id);
+      const visual = getSubjectVisual(folder.title);
+
+      document.getElementById("folder-modal-title").textContent = folder.title;
+      document.getElementById("folder-modal-badge").textContent = `${children.length} oynatma listesi`;
+      document.getElementById("folder-modal-icon").innerHTML = visual.svg;
+
+      const gridEl = document.getElementById("folder-modal-grid");
+      if (children.length === 0) {
+        gridEl.innerHTML = `
+          <div class="col-span-full py-10 text-center text-sm text-white/65">
+            Bu klasörde henüz oynatma listesi yok. Sağ üstteki <strong>"+ Hoca Ekle"</strong> butonunu kullanabilirsiniz.
+          </div>
+        `;
+      } else {
+        gridEl.innerHTML = children
+          .map((child, idx) => renderLinkTileHtml(child, folder.title, idx, children.length))
+          .join("");
+      }
+    }
+
+    function closeFolderModal() {
+      state.openFolderId = null;
+      document.getElementById("folder-modal").classList.add("hidden");
+    }
+
+    /* --------------------------------------------------------------------------
+       7. EKLEME / DÜZENLEME / SİLME İŞLEMLERİ
+       -------------------------------------------------------------------------- */
+    function openEditorModal({ mode, kind, itemId = null, defaultParent = "default" }) {
+      const modal = document.getElementById("editor-modal");
+      const titleHeader = document.getElementById("editor-modal-title");
+      const inputId = document.getElementById("edit-item-id");
+      const inputKind = document.getElementById("edit-item-kind");
+      const inputTitle = document.getElementById("edit-title");
+      const selectParent = document.getElementById("edit-parent");
+      const inputUrl = document.getElementById("edit-url");
+      const parentWrapper = document.getElementById("field-parent-wrapper");
+      const urlWrapper = document.getElementById("field-url-wrapper");
+      const urlHint = document.getElementById("url-warning-hint");
+
+      inputId.value = itemId || "";
+      inputKind.value = kind;
+      urlHint.classList.add("hidden");
+
+      // Klasör seçeneklerini doldur
+      const folders = getSortedRootItems().filter((i) => i.folder);
+      selectParent.innerHTML = `<option value="default">Ana Ekran (Klasör Dışı)</option>` +
+        folders.map((f) => `<option value="${f.id}">${escapeHtml(f.title)}</option>`).join("");
+
+      if (kind === "folder") {
+        parentWrapper.classList.add("hidden");
+        urlWrapper.classList.add("hidden");
+        inputUrl.required = false;
+        document.getElementById("label-edit-title").textContent = "Ders Klasörü Adı";
+        inputTitle.placeholder = "Örn: ayt edebiyat veya tyt tarih";
+      } else {
+        parentWrapper.classList.remove("hidden");
+        urlWrapper.classList.remove("hidden");
+        inputUrl.required = true;
+        document.getElementById("label-edit-title").textContent = "Hoca veya Oynatma Listesi Adı";
+        inputTitle.placeholder = "Örn: eyüp b, görkem şahin";
+      }
+
+      if (mode === "edit" && itemId) {
+        const existing = state.items.find((i) => i.id === itemId);
+        if (!existing) return;
+        titleHeader.textContent = existing.folder ? "Klasörü Düzenle" : "Oynatma Listesini Düzenle";
+        inputTitle.value = existing.title;
+        if (!existing.folder) {
+          selectParent.value = existing.parent || "default";
+          inputUrl.value = existing.url || "";
+          if (checkPlaylistWarning(existing.url)) {
+            urlHint.classList.remove("hidden");
+          }
+        }
+      } else {
+        titleHeader.textContent = kind === "folder" ? "Yeni Ders Klasörü Oluştur" : "Yeni Hoca / Link Ekle";
+        inputTitle.value = "";
+        inputUrl.value = "";
+        selectParent.value = defaultParent;
+      }
+
+      modal.classList.remove("hidden");
+      setTimeout(() => inputTitle.focus(), 50);
+    }
+
+    function closeEditorModal() {
+      document.getElementById("editor-modal").classList.add("hidden");
+    }
+
+    function handleEditorSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById("edit-item-id").value;
+      const kind = document.getElementById("edit-item-kind").value;
+      const title = document.getElementById("edit-title").value.trim();
+      const parent = document.getElementById("edit-parent").value || "default";
+      const url = document.getElementById("edit-url").value.trim();
+
+      if (!title) return;
+
+      if (id) {
+        // Mevcut öğeyi güncelle
+        const target = state.items.find((i) => i.id === id);
+        if (target) {
+          target.title = title;
+          if (!target.folder) {
+            if (target.parent !== parent) {
+              const siblings = state.items.filter((i) => i.parent === parent);
+              target.parent = parent;
+              target.order = siblings.length;
+            }
+            target.url = url;
+          }
+          showToast("Değişiklik kaydedildi", "✅");
+        }
+      } else {
+        // Yeni öğe oluştur
+        const newId = "links" + Math.random().toString(36).substring(2, 9);
+        const targetParent = kind === "folder" ? "default" : parent;
+        const siblings = state.items.filter((i) => i.parent === targetParent);
+        const newItem = {
+          id: newId,
+          order: siblings.length,
+          parent: targetParent,
+          title
+        };
+        if (kind === "folder") {
+          newItem.folder = true;
+        } else {
+          newItem.url = url;
+        }
+        state.items.push(newItem);
+        showToast(kind === "folder" ? "Yeni klasör eklendi" : "Yeni oynatma listesi eklendi", "🎉");
+      }
+
+      closeEditorModal();
+      renderAll();
+      persistToCloud();
+    }
+
+    function promptDeleteItem(itemId) {
+      const item = state.items.find((i) => i.id === itemId);
+      if (!item) return;
+      state.pendingDeleteId = itemId;
+      const descEl = document.getElementById("delete-modal-desc");
+      if (item.folder) {
+        const count = getFolderChildren(item.id).length;
+        descEl.textContent = `"${item.title}" klasörünü ve içindeki ${count} oynatma listesini silmek istediğinize emin misiniz?`;
+      } else {
+        descEl.textContent = `"${item.title}" bağlantısını silmek istediğinize emin misiniz?`;
+      }
+      document.getElementById("delete-modal").classList.remove("hidden");
+    }
+
+    function confirmDeleteItem() {
+      const id = state.pendingDeleteId;
+      if (!id) return;
+      const target = state.items.find((i) => i.id === id);
+      if (target) {
+        if (target.folder) {
+          // Klasörü ve altındaki tüm bağlantıları kaldır
+          state.items = state.items.filter((i) => i.id !== id && i.parent !== id);
+        } else {
+          state.items = state.items.filter((i) => i.id !== id);
+        }
+        normalizeOrders(target.parent || "default");
+        showToast("Öğe silindi", "🗑️");
+      }
+      state.pendingDeleteId = null;
+      document.getElementById("delete-modal").classList.add("hidden");
+      renderAll();
+      persistToCloud();
+    }
+
+    function normalizeOrders(parentId) {
+      const siblings = state.items
+        .filter((i) => i.parent === parentId)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      siblings.forEach((item, index) => {
+        item.order = index;
+      });
+    }
+
+    function moveItemOrder(itemId, direction) {
+      const target = state.items.find((i) => i.id === itemId);
+      if (!target) return;
+      const siblings = state.items
+        .filter((i) => i.parent === target.parent)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+      const currentIndex = siblings.findIndex((i) => i.id === itemId);
+      const swapIndex = currentIndex + direction;
+      if (swapIndex < 0 || swapIndex >= siblings.length) return;
+
+      const tempOrder = siblings[currentIndex].order;
+      siblings[currentIndex].order = siblings[swapIndex].order;
+      siblings[swapIndex].order = tempOrder;
+
+      renderAll();
+      persistToCloud();
+    }
+
+    /* --------------------------------------------------------------------------
+       8. TEMA, JSON DIŞA / İÇE AKTARMA VE BONJOURR PARSER
+       -------------------------------------------------------------------------- */
+    function applyTheme(themeName, save = true) {
+      state.theme = themeName;
+      document.body.setAttribute("data-theme", themeName);
+      document.querySelectorAll(".theme-btn").forEach((btn) => {
+        const active = btn.dataset.themeChoice === themeName;
+        btn.classList.toggle("border-white/50", active);
+        btn.classList.toggle("bg-white/20", active);
+        btn.classList.toggle("border-white/15", !active);
+      });
+      if (save) persistToCloud();
+    }
+
+    function exportDataAsJson() {
+      const payload = {
+        app: "YKS-Bonjourr-Sync",
+        exportedAt: new Date().toISOString(),
+        theme: state.theme,
+        items: state.items
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `yks-ders-rehberi-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("JSON yedeği indirildi", "📥");
+    }
+
+    // Hem özel uygulama JSON'unu hem doğrudan Bonjourr dışa aktarma dosyasını tanır
+    function importFromJsonFile(file) {
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target.result);
+          let importedItems = [];
+
+          if (Array.isArray(parsed.items)) {
+            importedItems = parsed.items;
+          } else {
+            // Doğrudan Bonjourr yedek JSON formatı ("links..." anahtarları)
+            Object.keys(parsed).forEach((key) => {
+              if (key.startsWith("links") && parsed[key] && typeof parsed[key] === "object" && parsed[key].title) {
+                const entry = parsed[key];
+                importedItems.push({
+                  id: entry._id || key,
+                  order: entry.order ?? 0,
+                  parent: entry.parent || "default",
+                  title: entry.title,
+                  ...(entry.folder ? { folder: true } : { url: entry.url || "" })
+                });
+              }
+            });
+          }
+
+          if (importedItems.length === 0) {
+            showToast("Dosyada geçerli ders veya bağlantı bulunamadı", "⚠️");
+            return;
+          }
+
+          state.items = importedItems;
+          if (parsed.theme) applyTheme(parsed.theme, false);
+          renderAll();
+          persistToCloud();
+          showToast(`${importedItems.length} öğe başarıyla içe aktarıldı`, "✅");
+        } catch (err) {
+          console.error("JSON içe aktarma hatası:", err);
+          showToast("JSON dosyası okunamadı", "❌");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    /* --------------------------------------------------------------------------
+       9. OLAY DİNLEYİCİLERİ (EVENT DELEGATION & KONTROLLER)
+       -------------------------------------------------------------------------- */
+    function bindEvents() {
+      // Merkezi tıklama delegasyonu (Klasör açma, düzenleme, silme, sıralama)
+      document.addEventListener("click", (e) => {
+        const actionEl = e.target.closest("[data-action]");
+        if (!actionEl) return;
+
+        const action = actionEl.dataset.action;
+        const id = actionEl.dataset.id;
+
+        if (action === "open-folder") {
+          openFolderModal(id);
+        } else if (action === "edit-item") {
+          e.preventDefault();
+          e.stopPropagation();
+          const item = state.items.find((i) => i.id === id);
+          if (item) {
+            openEditorModal({ mode: "edit", kind: item.folder ? "folder" : "link", itemId: id });
+          }
+        } else if (action === "delete-item") {
+          e.preventDefault();
+          e.stopPropagation();
+          promptDeleteItem(id);
+        } else if (action === "move-up") {
+          e.preventDefault();
+          e.stopPropagation();
+          moveItemOrder(id, -1);
+        } else if (action === "move-down") {
+          e.preventDefault();
+          e.stopPropagation();
+          moveItemOrder(id, 1);
+        } else if (action === "add-to-folder") {
+          openEditorModal({ mode: "create", kind: "link", defaultParent: id });
+        }
+      });
+
+      // Arama çubuğu
+      const searchInput = document.getElementById("search-input");
+      const btnClearSearch = document.getElementById("btn-clear-search");
+      searchInput.addEventListener("input", (e) => {
+        state.searchQuery = e.target.value;
+        btnClearSearch.classList.toggle("hidden", state.searchQuery.length === 0);
+        renderAll();
+      });
+
+      btnClearSearch.addEventListener("click", () => {
+        state.searchQuery = "";
+        searchInput.value = "";
+        btnClearSearch.classList.add("hidden");
+        renderAll();
+        searchInput.focus();
+      });
+
+      // TYT / AYT / Tümü Sekmeleri
+      document.querySelectorAll(".filter-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          state.filterTab = tab.dataset.filter;
+          document.querySelectorAll(".filter-tab").forEach((t) => {
+            const isSelected = t.dataset.filter === state.filterTab;
+            t.classList.toggle("bg-white/25", isSelected);
+            t.classList.toggle("text-white", isSelected);
+            t.classList.toggle("shadow-sm", isSelected);
+            t.classList.toggle("text-white/75", !isSelected);
+          });
+          renderAll();
+        });
+      });
+
+      // Tümünü Açık Listele / Klasör Görünümü
+      document.getElementById("btn-toggle-view").addEventListener("click", () => {
+        state.expandedView = !state.expandedView;
+        document.getElementById("label-view-mode").textContent = state.expandedView
+          ? "Klasör Görünümü"
+          : "Tümünü Açık Listele";
+        renderAll();
+      });
+
+      // Düzenleme Modu Aç / Kapat
+      document.getElementById("btn-toggle-edit").addEventListener("click", () => {
+        state.editMode = !state.editMode;
+        const btn = document.getElementById("btn-toggle-edit");
+        const banner = document.getElementById("edit-banner");
+        const label = document.getElementById("label-edit-mode");
+
+        btn.classList.toggle("bg-amber-400/25", state.editMode);
+        btn.classList.toggle("border-amber-300/40", state.editMode);
+        banner.classList.toggle("hidden", !state.editMode);
+        label.textContent = state.editMode ? "Düzenlemeyi Bitir" : "Düzenle";
+        renderAll();
+      });
+
+      // Yeni Klasör & Yeni Root Link Butonları
+      document.getElementById("btn-add-folder").addEventListener("click", () => {
+        openEditorModal({ mode: "create", kind: "folder" });
+      });
+      document.getElementById("btn-add-root-link").addEventListener("click", () => {
+        openEditorModal({ mode: "create", kind: "link", defaultParent: "default" });
+      });
+
+      // Klasör Modalı İçi Kontroller
+      document.getElementById("btn-close-folder").addEventListener("click", closeFolderModal);
+      document.getElementById("folder-modal").addEventListener("click", (e) => {
+        if (e.target.id === "folder-modal") closeFolderModal();
+      });
+      document.getElementById("btn-folder-add-link").addEventListener("click", () => {
+        if (state.openFolderId) {
+          openEditorModal({ mode: "create", kind: "link", defaultParent: state.openFolderId });
+        }
+      });
+
+      // Editor Modalı Kontrolleri
+      document.getElementById("btn-close-editor").addEventListener("click", closeEditorModal);
+      document.getElementById("btn-cancel-editor").addEventListener("click", closeEditorModal);
+      document.getElementById("editor-modal").addEventListener("click", (e) => {
+        if (e.target.id === "editor-modal") closeEditorModal();
+      });
+      document.getElementById("editor-form").addEventListener("submit", handleEditorSubmit);
+      document.getElementById("edit-url").addEventListener("input", (e) => {
+        const warn = checkPlaylistWarning(e.target.value.trim());
+        document.getElementById("url-warning-hint").classList.toggle("hidden", !warn);
+      });
+
+      // Silme Onay Modalı
+      document.getElementById("btn-cancel-delete").addEventListener("click", () => {
+        state.pendingDeleteId = null;
+        document.getElementById("delete-modal").classList.add("hidden");
+      });
+      document.getElementById("btn-confirm-delete").addEventListener("click", confirmDeleteItem);
+
+      // Ayarlar Modalı
+      const settingsModal = document.getElementById("settings-modal");
+      document.getElementById("btn-open-settings").addEventListener("click", () => {
+        document.getElementById("reset-initial-row").classList.remove("hidden");
+        document.getElementById("reset-confirm-row").classList.add("hidden");
+        settingsModal.classList.remove("hidden");
+      });
+      document.getElementById("btn-close-settings").addEventListener("click", () => {
+        settingsModal.classList.add("hidden");
+      });
+      settingsModal.addEventListener("click", (e) => {
+        if (e.target.id === "settings-modal") settingsModal.classList.add("hidden");
+      });
+
+      // Tema Seçimi
+      document.querySelectorAll(".theme-btn").forEach((btn) => {
+        btn.addEventListener("click", () => applyTheme(btn.dataset.themeChoice, true));
+      });
+
+      // JSON Export / Import
+      document.getElementById("btn-export-json").addEventListener("click", exportDataAsJson);
+      document.getElementById("input-import-json").addEventListener("change", (e) => {
+        if (e.target.files && e.target.files[0]) {
+          importFromJsonFile(e.target.files[0]);
+          e.target.value = "";
+        }
+      });
+
+      // Varsayılanlara Sıfırla (İki aşamalı güvenli onay)
+      document.getElementById("btn-reset-prompt").addEventListener("click", () => {
+        document.getElementById("reset-initial-row").classList.add("hidden");
+        document.getElementById("reset-confirm-row").classList.remove("hidden");
+      });
+      document.getElementById("btn-reset-cancel").addEventListener("click", () => {
+        document.getElementById("reset-confirm-row").classList.add("hidden");
+        document.getElementById("reset-initial-row").classList.remove("hidden");
+      });
+      document.getElementById("btn-reset-confirm").addEventListener("click", () => {
+        state.items = structuredClone(DEFAULT_ITEMS);
+        applyTheme("petrol", false);
+        renderAll();
+        persistToCloud();
+        document.getElementById("reset-confirm-row").classList.add("hidden");
+        document.getElementById("reset-initial-row").classList.remove("hidden");
+        settingsModal.classList.add("hidden");
+        showToast("Başlangıç listesine sıfırlandı", "🔄");
+      });
+
+      // Google ile Giriş Yap / Çıkış Yap
+      document.getElementById("btn-auth").addEventListener("click", async () => {
+        if (!auth) {
+          showToast("Bulut kimlik servisi şu an yapılandırılmamış", "ℹ️");
+          return;
+        }
+        if (state.user && !state.user.isAnonymous) {
+          settingsModal.classList.remove("hidden");
+          return;
+        }
+        try {
+          const provider = new GoogleAuthProvider();
+          await signInWithPopup(auth, provider);
+          showToast("Google hesabıyla giriş yapıldı, veriler eşitleniyor", "☁️");
+        } catch (err) {
+          console.error("Google giriş hatası:", err);
+          showToast("Giriş penceresi kapatıldı veya izin verilmedi", "⚠️");
+        }
+      });
+
+      document.getElementById("btn-settings-signout").addEventListener("click", async () => {
+        if (!auth) return;
+        try {
+          await signOut(auth);
+          await signInAnonymously(auth);
+          settingsModal.classList.add("hidden");
+          showToast("Google hesabından çıkış yapıldı", "👋");
+        } catch (err) {
+          console.error("Çıkış hatası:", err);
+        }
+      });
+
+      // ESC Tuşu ile Açık Modalları Kapat (Bonjourr altMode / escKey deneyimi)
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeFolderModal();
+          closeEditorModal();
+          settingsModal.classList.add("hidden");
+          document.getElementById("delete-modal").classList.add("hidden");
+        }
+      });
+    }
+
+    /* --------------------------------------------------------------------------
+       10. UYGULAMA BAŞLATMA
+       -------------------------------------------------------------------------- */
+    bindEvents();
+    renderAll();
+    initFirebase();
+  </script>
+</body>
+</html>
